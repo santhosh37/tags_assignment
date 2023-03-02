@@ -9,7 +9,7 @@ tagController.list = async (request, response) => {
   let searchKeyword = "";
   let fetchLimit = "";
   let sortOrder = "";
-  console.log(request.query);
+
   if (request.query !== null) {
     const searchRequest = request.query.search;
     const limitRequest = request.query.limit;
