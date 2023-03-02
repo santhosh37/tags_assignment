@@ -6,7 +6,42 @@ const tagController = {};
 This method used to get all the tags list.
 */
 tagController.list = async (request, response) => {
-  const tagsList = await tagSchema.find();
+  let searchKeyword = "";
+  let fetchLimit = "";
+  let sortOrder = "";
+  console.log(request.query);
+  if (request.query !== null) {
+    const searchRequest = request.query.search;
+    const limitRequest = request.query.limit;
+    const sortRequest = request.query.sort;
+
+    if (searchRequest && searchRequest.trim().length > 0) {
+      searchKeyword = searchRequest;
+    }
+
+    if (limitRequest && limitRequest > 0) {
+      fetchLimit = limitRequest;
+    }
+
+    if (sortRequest && sortRequest.trim().length > 0) {
+      sortOrder = sortRequest;
+    }
+  }
+
+  console.log(fetchLimit);
+  console.log(searchKeyword);
+  console.log(sortOrder);
+
+  const tagsList = await tagSchema
+    .find({
+      $or: [
+        { name: { $regex: searchKeyword, $options: "i" } },
+        { description: { $regex: searchKeyword, $options: "i" } },
+        // { status: { $regex: keyword, $options: "i" } },
+      ],
+    })
+    .sort(sortOrder)
+    .limit(fetchLimit);
 
   return response.json({
     status: "Success",
@@ -40,6 +75,7 @@ tagController.update = async (request, response) => {
     .then(() => {
       return tagController.list(request, response);
     })
+
     .catch((error) => {
       return response.json({
         statusCode: error.statusCode,
