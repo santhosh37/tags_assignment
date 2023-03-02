@@ -35,6 +35,7 @@ tagController.list = async (request, response) => {
   const tagsList = await tagSchema
     .find({
       $or: [
+        { _id: { $regex: searchKeyword, $options: "i" } },
         { name: { $regex: searchKeyword, $options: "i" } },
         { description: { $regex: searchKeyword, $options: "i" } },
         // { status: { $regex: keyword, $options: "i" } },
